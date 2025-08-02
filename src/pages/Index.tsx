@@ -4,7 +4,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Components
 import Preloader from '@/components/Preloader';
-import Navigation from '@/components/Navigation';
 import ScrollManager from '@/components/ScrollManager';
 import HeroSection from '@/components/sections/HeroSection';
 import FeaturesSection from '@/components/sections/FeaturesSection';
@@ -57,10 +56,6 @@ const Index = () => {
 
   return (
     <div className="relative bg-background text-foreground">
-      <Navigation 
-        activeSection={activeSection} 
-        onSectionChange={handleSectionChange}
-      />
       
       <ScrollManager>
         <main className="relative">

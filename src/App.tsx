@@ -10,6 +10,8 @@ import Community from "./pages/Community";
 import KeyManager from "./pages/KeyManager";
 import Comparison from "./pages/Comparison";
 import NotFound from "./pages/NotFound";
+import Navbar from "./components/Navbar";
+import Profile from "./pages/Profile"; // ✅ import the page
 
 const queryClient = new QueryClient();
 
@@ -19,6 +21,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home onSectionChange={() => {}} />} />
           <Route path="/discovery" element={<Discovery onSectionChange={() => {}} />} />
@@ -26,11 +29,13 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/keys" element={<KeyManager />} />
           <Route path="/comparison" element={<Comparison />} />
+          <Route path="/profile" element={<Profile />} /> {/* ✅ add this line */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
+
 
 export default App;
