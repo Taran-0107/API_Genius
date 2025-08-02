@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { 
   MagnifyingGlass, 
@@ -12,23 +13,23 @@ import {
 } from 'phosphor-react';
 
 interface NavigationProps {
-  activeSection: string;
   onSectionChange: (section: string) => void;
 }
 
-const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
+const Navigation = ({ onSectionChange }: NavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: MagnifyingGlass },
-    { id: 'discovery', label: 'Discovery', icon: MagnifyingGlass },
-    { id: 'integration', label: 'Integration', icon: Code },
-    { id: 'community', label: 'Community', icon: Users },
-    { id: 'keys', label: 'Key Manager', icon: Key },
-    { id: 'comparison', label: 'Compare', icon: ChartBar },
-    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'home', label: 'Home', icon: MagnifyingGlass, path: '/' },
+    { id: 'discovery', label: 'Discovery', icon: MagnifyingGlass, path: '/discovery' },
+    { id: 'integration', label: 'Integration', icon: Code, path: '/integration' },
+    { id: 'community', label: 'Community', icon: Users, path: '/community' },
+    { id: 'keys', label: 'Key Manager', icon: Key, path: '/keys' },
+    { id: 'comparison', label: 'Compare', icon: ChartBar, path: '/comparison' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
   ];
 
   useEffect(() => {
@@ -76,12 +77,12 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
             <div className="hidden lg:flex items-center space-x-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeSection === item.id;
+                const isActive = location.pathname === item.path;
                 
                 return (
-                  <button
+                  <Link
                     key={item.id}
-                    onClick={() => onSectionChange(item.id)}
+                    to={item.path}
                     className={`
                       flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300
                       ${isActive 
@@ -92,7 +93,7 @@ const Navigation = ({ activeSection, onSectionChange }: NavigationProps) => {
                   >
                     <Icon size={18} />
                     <span className="text-sm font-medium">{item.label}</span>
-                  </button>
+                  </Link>
                 );
               })}
             </div>
