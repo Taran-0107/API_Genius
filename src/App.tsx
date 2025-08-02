@@ -17,6 +17,16 @@ import Profile from "./pages/Profile"; // ✅ import the page
 const queryClient = new QueryClient();
 
 const App = () => (
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Preload any necessary assets here
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
