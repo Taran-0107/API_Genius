@@ -1,6 +1,7 @@
 // components/Navbar.tsx
 import { Link, useLocation } from "react-router-dom";
-import { House, Compass, Code, Users, Key, ChartBar, User } from "phosphor-react";
+import { House, Compass, Code, Users, Key, ChartBar, User, SignIn } from "phosphor-react";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { label: "Home", path: "/", icon: House },
@@ -19,24 +20,44 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <div className="text-xl font-bold text-gradient">API Genius</div>
-        <div className="flex space-x-4">
-          {navItems.map(({ label, path, icon: Icon }) => {
-            const isActive = location.pathname === path;
-            return (
-              <Link
-                key={path}
-                to={path}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition ${
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                <Icon size={20} />
-                <span>{label}</span>
-              </Link>
-            );
-          })}
+        <div className="flex items-center space-x-6">
+          <div className="flex space-x-4">
+            {navItems.map(({ label, path, icon: Icon }) => {
+              const isActive = location.pathname === path;
+              return (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition ${
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Icon size={20} />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
+          </div>
+          
+          {/* Auth Buttons */}
+          <div className="flex items-center space-x-3">
+            <Link 
+              to="/login" 
+              className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+            >
+              <SignIn size={20} />
+              <span>Sign In</span>
+            </Link>
+            <Button 
+              asChild
+              size="sm"
+              className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
+            >
+              <Link to="/signup">Sign Up</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </nav>

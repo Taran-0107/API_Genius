@@ -11,8 +11,9 @@ import Community from "./pages/Community";
 import KeyManager from "./pages/KeyManager";
 import Comparison from "./pages/Comparison";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
-import Profile from "./pages/Profile"; // ✅ import the page
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,8 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/keys" element={<KeyManager />} />
           <Route path="/comparison" element={<Comparison />} />
-          <Route path="/profile" element={<Profile />} /> {/* ✅ add this line */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
