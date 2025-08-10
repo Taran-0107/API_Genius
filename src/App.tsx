@@ -15,33 +15,42 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/Profile";
+import Preloader from "./components/Preloader";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
 
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home onSectionChange={() => {}} />} />
-          <Route path="/discovery" element={<Discovery onSectionChange={() => {}} />} />
-          <Route path="/integration" element={<Integration onSectionChange={() => {}} />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/keys" element={<KeyManager />} />
-          <Route path="/comparison" element={<Comparison />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  const handlePreloaderComplete = () => {
+    setIsLoading(false);
+  };
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {isLoading && <Preloader onComplete={handlePreloaderComplete} />}
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home onSectionChange={() => {}} />} />
+            <Route path="/discovery" element={<Discovery onSectionChange={() => {}} />} />
+            <Route path="/integration" element={<Integration onSectionChange={() => {}} />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/keys" element={<KeyManager />} />
+            <Route path="/comparison" element={<Comparison />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 
 export default App;
