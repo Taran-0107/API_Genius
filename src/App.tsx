@@ -12,6 +12,7 @@ import KeyManager from "./pages/KeyManager";
 import Comparison from "./pages/Comparison";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/Profile";
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/keys" element={<KeyManager />} />
           <Route path="/comparison" element={<Comparison />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
