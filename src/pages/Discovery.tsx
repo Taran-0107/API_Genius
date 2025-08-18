@@ -4,12 +4,22 @@ interface DiscoveryProps {
   onSectionChange: (section: string) => void;
 }
 
-const Discovery = ({ onSectionChange }: DiscoveryProps) => {
+import { useLocation } from "react-router-dom";
+
+const Discovery = ({ onSectionChange }) => {
+  const location = useLocation();
+  const query = location.state?.query || "";
+  const discover = location.state?.discover || false;
+
   return (
-    <div className="pt-24">
-      <APIDiscoverySection onSectionChange={onSectionChange} />
-    </div>
+    <APIDiscoverySection
+      onSectionChange={onSectionChange}
+      onSelectionChange={(ids) => console.log(ids)}
+      initialQuery={query}
+      initialDiscover={discover}
+    />
   );
 };
+
 
 export default Discovery;

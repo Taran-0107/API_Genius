@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {apiFetch,apiFetchWithAuth} from '@/helpers/helper'; // Adjust the import path as necessary
 import { 
   Code, 
   Copy, 
@@ -8,23 +9,48 @@ import {
   Play, 
   Key,
   CheckCircle,
+  Pencil,
   Warning,
+  SpinnerGap,
   Globe
 } from 'phosphor-react';
+import { Sparkle,Search } from 'lucide-react';
+
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface IntegrationSectionProps {
-  onSectionChange: (section: string) => void;
+interface Api {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  homepage_url: string;
+  docs_url: string;
+  avg_ease_of_use: number | null;
+  avg_docs_quality: number | null;
+  avg_latency: number | null;
+  rating_count: number;
 }
 
-const IntegrationSection = ({ onSectionChange }: IntegrationSectionProps) => {
+
+interface IntegrationSectionProps {
+  onSectionChange: (section: string) => void;
+
+}
+
+const IntegrationSection = ({ onSectionChange}: IntegrationSectionProps) => {
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
   const [selectedAPI, setSelectedAPI] = useState('stripe');
+  const [code,setcode] = useState('Code will be generated here');
+  const [generating, setGenerating] = useState(false);
+  const [ApiQueryValue, setApiQueryValue] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [showKeyManager, setShowKeyManager] = useState(false);
+  const [apis, setApis] = useState<Api[]>([]);
+  const [PromptValue,setPromptValue]=useState("");
   const sectionRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLDivElement>(null);
+
 
   const languages = [
     { id: 'javascript', name: 'JavaScript', icon: '🟡' },
@@ -35,155 +61,6 @@ const IntegrationSection = ({ onSectionChange }: IntegrationSectionProps) => {
     { id: 'ruby', name: 'Ruby', icon: '💎' }
   ];
 
-  const apis = [
-    { id: 'stripe', name: 'Stripe Payments', status: 'active' },
-    { id: 'openai', name: 'OpenAI GPT-4', status: 'deprecated' },
-    { id: 'weather', name: 'OpenWeatherMap', status: 'active' }
-  ];
-
-  const codeExamples = {
-    javascript: {
-      stripe: `// Stripe Payment Integration
-import Stripe from 'stripe';
-
-const stripe = new Stripe('${apiKey || 'sk_test_your_stripe_key'}');
-
-// Create a payment intent
-const paymentIntent = await stripe.paymentIntents.create({
-  amount: 2000, // $20.00
-  currency: 'usd',
-  metadata: {
-    order_id: '12345'
-  }
-});
-
-// Handle the payment on frontend
-const { error } = await stripe.confirmCardPayment(
-  paymentIntent.client_secret,
-  {
-    payment_method: {
-      card: elements.getElement(CardElement),
-      billing_details: {
-        name: 'Customer Name'
-      }
-    }
-  }
-);
-
-if (error) {
-  console.error('Payment failed:', error);
-} else {
-  console.log('Payment succeeded!');
-}`,
-      openai: `// OpenAI GPT-4 Integration
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: '${apiKey || 'your_openai_api_key'}'
-});
-
-// Generate text completion
-const completion = await openai.chat.completions.create({
-  model: "gpt-4",
-  messages: [
-    {
-      role: "system", 
-      content: "You are a helpful assistant."
-    },
-    {
-      role: "user", 
-      content: "Explain quantum computing in simple terms"
-    }
-  ],
-  max_tokens: 150,
-  temperature: 0.7
-});
-
-console.log(completion.choices[0].message.content);`,
-      weather: `// OpenWeatherMap Integration
-const API_KEY = '${apiKey || 'your_weather_api_key'}';
-
-// Get current weather
-const getCurrentWeather = async (city) => {
-  const response = await fetch(
-    \`https://api.openweathermap.org/data/2.5/weather?q=\${city}&appid=\${API_KEY}&units=metric\`
-  );
-  
-  const data = await response.json();
-  
-  return {
-    temperature: data.main.temp,
-    description: data.weather[0].description,
-    humidity: data.main.humidity,
-    windSpeed: data.wind.speed
-  };
-};
-
-// Usage
-const weather = await getCurrentWeather('New York');
-console.log(\`Temperature: \${weather.temperature}°C\`);`
-    },
-    python: {
-      stripe: `# Stripe Payment Integration
-import stripe
-
-stripe.api_key = "${apiKey || 'sk_test_your_stripe_key'}"
-
-# Create a payment intent
-payment_intent = stripe.PaymentIntent.create(
-    amount=2000,  # $20.00
-    currency='usd',
-    metadata={
-        'order_id': '12345'
-    }
-)
-
-print(f"Payment Intent: {payment_intent.id}")`,
-      openai: `# OpenAI GPT-4 Integration
-from openai import OpenAI
-
-client = OpenAI(api_key="${apiKey || 'your_openai_api_key'}")
-
-# Generate text completion
-completion = client.chat.completions.create(
-    model="gpt-4",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Explain quantum computing in simple terms"}
-    ],
-    max_tokens=150,
-    temperature=0.7
-)
-
-print(completion.choices[0].message.content)`,
-      weather: `# OpenWeatherMap Integration
-import requests
-
-API_KEY = "${apiKey || 'your_weather_api_key'}"
-
-def get_current_weather(city):
-    url = f"https://api.openweathermap.org/data/2.5/weather"
-    params = {
-        'q': city,
-        'appid': API_KEY,
-        'units': 'metric'
-    }
-    
-    response = requests.get(url, params=params)
-    data = response.json()
-    
-    return {
-        'temperature': data['main']['temp'],
-        'description': data['weather'][0]['description'],
-        'humidity': data['main']['humidity'],
-        'wind_speed': data['wind']['speed']
-    }
-
-# Usage
-weather = get_current_weather('New York')
-print(f"Temperature: {weather['temperature']}°C")`
-    }
-  };
 
   useEffect(() => {
     if (codeRef.current) {
@@ -205,8 +82,24 @@ print(f"Temperature: {weather['temperature']}°C")`
     }
   }, [selectedLanguage, selectedAPI]);
 
+  useEffect(() => {
+    const fetchApis = async () => {
+      try {
+        const response = await apiFetch(`/apis/fromdb?fetch_all=true`);
+        setApis(response.apis || []);
+      } catch (error) {
+        console.error('Error fetching APIs:', error);
+      } finally {
+        setGenerating(false);
+      } 
+
+    };
+
+    fetchApis();
+
+  }, []);
+
   const copyToClipboard = () => {
-    const code = codeExamples[selectedLanguage as keyof typeof codeExamples][selectedAPI as keyof typeof codeExamples.javascript];
     navigator.clipboard.writeText(code);
     // Show toast notification
   };
@@ -235,6 +128,31 @@ print(f"Temperature: {weather['temperature']}°C")`
     }
   };
 
+  const handleGenerateClick = async () => {
+    setGenerating(true);
+    setcode('Generating code...');
+    // Simulate a network request. In a real app, this would be an API call.
+    const gencode=await apiFetchWithAuth(`/ai/generate-code`, {
+      method: 'POST',
+      body: JSON.stringify({
+
+        api_id: selectedAPI,
+        language: selectedLanguage,
+        description:PromptValue
+      
+      })
+
+    });
+    setcode(gencode.code || 'Code generation failed');
+    setGenerating(false);
+  };
+
+  // Convert the search query to lowercase for a case-insensitive search
+  const filteredApis = apis.filter(api =>
+    api.name.toLowerCase().includes(ApiQueryValue.toLowerCase()) ||
+    api.description.toLowerCase().includes(ApiQueryValue.toLowerCase())
+  );
+
   return (
     <section
       ref={sectionRef}
@@ -253,6 +171,42 @@ print(f"Temperature: {weather['temperature']}°C")`
           </p>
         </div>
 
+        {/* Full-width Prompt Card - Outside of the grid */}
+        <div className="glass-card mb-8">
+          <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+            <Pencil size={20} />
+            <span>Prompt</span>
+          </h3>
+          <div className="space-y-3">
+            <textarea
+              placeholder="Enter your Prompt..."
+              className="w-full px-4 py-3 bg-input rounded-xl border border-border focus:border-primary outline-none transition-all resize-none"
+              value={PromptValue}
+              onChange={(e) => setPromptValue(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={handleGenerateClick}
+            className={`
+              btn-glass text-sm flex items-center justify-center space-x-2 mt-4 w-full py-3 transition-all
+              ${generating ? 'bg-gray-500 cursor-not-allowed' : 'bg-gradient-primary hover:scale-[1.01]'}
+            `}
+            disabled={generating}
+          >
+            {generating ? (
+              <>
+                <SpinnerGap size={16} className="animate-spin" />
+                <span>Generating...</span>
+              </>
+            ) : (
+              <>
+                <Sparkle size={16} />
+                <span>Generate Code</span>
+              </>
+            )}
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Configuration Panel */}
           <div className="lg:col-span-1 space-y-6">
@@ -262,29 +216,43 @@ print(f"Temperature: {weather['temperature']}°C")`
                 <Code className="text-primary" size={20} />
                 <span>Select API</span>
               </h3>
-              <div className="space-y-2">
-                {apis.map((api) => (
-                  <button
-                    key={api.id}
-                    onClick={() => setSelectedAPI(api.id)}
-                    className={`
-                      w-full flex items-center justify-between p-3 rounded-xl transition-all
-                      ${selectedAPI === api.id
-                        ? 'bg-gradient-primary text-primary-foreground glow-primary'
-                        : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
-                      }
-                    `}
-                  >
-                    <span className="font-medium">{api.name}</span>
-                    <div className={`flex items-center space-x-1 ${getAPIStatusColor(api.status)}`}>
-                      {getAPIStatusIcon(api.status)}
-                      <span className="text-xs capitalize">{api.status}</span>
-                    </div>
-                  </button>
-                ))}
+              <div className="relative flex items-center w-full my-3">
+                <Search className="absolute left-3 text-muted-foreground" size={20} />
+                <input
+                  placeholder="Search APIs..."
+                  className="w-full pl-10 pr-4 py-3 bg-input rounded-xl border border-border focus:border-primary outline-none transition-all"
+                  value={ApiQueryValue}
+                  onChange={(e) => setApiQueryValue(e.target.value)}
+                />
               </div>
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+                  {/* Filtering Logic */}
+                  {filteredApis.length > 0 ? (
+                    filteredApis.map((api) => (
+                      <button
+                        key={api.id}
+                        onClick={() => setSelectedAPI(api.id)}
+                        className={`
+                          w-full flex items-center justify-between p-3 rounded-xl transition-all
+                          ${selectedAPI === api.id
+                            ? 'bg-gradient-primary text-primary-foreground glow-primary'
+                            : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
+                          }
+                        `}
+                      >
+                        <span className="font-medium">{api.name}</span>
+                        <div className={`flex items-center space-x-1`}>
+                          {/* API status icon and text would go here */}
+                        </div>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      No APIs found.
+                    </div>
+                  )}
+                </div>
             </div>
-
             {/* Language Selection */}
             <div className="glass-card">
               <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
@@ -311,28 +279,7 @@ print(f"Temperature: {weather['temperature']}°C")`
               </div>
             </div>
 
-            {/* API Key Management */}
-            <div className="glass-card">
-              <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                <Key className="text-accent" size={20} />
-                <span>API Key</span>
-              </h3>
-              <div className="space-y-3">
-                <input
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Enter your API key..."
-                  className="w-full px-4 py-3 bg-input rounded-xl border border-border focus:border-primary outline-none transition-all"
-                />
-                <button
-                  onClick={() => onSectionChange('keys')}
-                  className="w-full btn-glass text-sm"
-                >
-                  Manage Keys Securely
-                </button>
-              </div>
-            </div>
+
           </div>
 
           {/* Code Editor */}
@@ -373,22 +320,9 @@ print(f"Temperature: {weather['temperature']}°C")`
               <div ref={codeRef} className="relative">
                 <pre className="bg-card/50 rounded-xl p-6 overflow-x-auto text-sm font-mono">
                   <code className="text-foreground whitespace-pre-wrap">
-                    {codeExamples[selectedLanguage as keyof typeof codeExamples][selectedAPI as keyof typeof codeExamples.javascript]}
+                    {code}
                   </code>
                 </pre>
-
-                {/* API Status Warning */}
-                {apis.find(api => api.id === selectedAPI)?.status === 'deprecated' && (
-                  <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
-                    <div className="flex items-center space-x-2 text-yellow-400">
-                      <Warning size={20} />
-                      <span className="font-medium">API Deprecated</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      This API version is deprecated. Consider migrating to the latest version.
-                    </p>
-                  </div>
-                )}
               </div>
 
               {/* Integration Help */}

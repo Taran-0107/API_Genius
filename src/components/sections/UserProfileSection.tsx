@@ -3,12 +3,12 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { User, Key, Gear, ChartBar } from "phosphor-react";
+import { useAuth } from "@/AuthContext"; // Import the custom hook
+
 
 gsap.registerPlugin(ScrollTrigger);
 
 const mockUser = {
-  name: "Jane Developer",
-  email: "jane.dev@example.com",
   apiKeys: 3,
   usage: "1.2M tokens this month",
   preferences: {
@@ -19,6 +19,9 @@ const mockUser = {
 
 const UserProfileSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser): null; // Fallback to "Guest" if no user
+  
 
   useEffect(() => {
     gsap.fromTo(
@@ -53,8 +56,8 @@ const UserProfileSection = () => {
               <User size={32} className="text-foreground" />
             </div>
             <div>
-              <h3 className="text-2xl font-semibold">{mockUser.name}</h3>
-              <p className="text-muted-foreground text-sm">{mockUser.email}</p>
+              <h3 className="text-2xl font-semibold">{user.username}</h3>
+              <p className="text-muted-foreground text-sm">{user.email}</p>
             </div>
           </div>
 

@@ -6,7 +6,7 @@ import { MagnifyingGlass, Sparkle } from 'phosphor-react';
 gsap.registerPlugin(ScrollTrigger);
 
 interface HeroSectionProps {
-  onSectionChange: (section: string) => void;
+  onSectionChange: (section: string, query?: string) => void;
 }
 
 const HeroSection = ({ onSectionChange }: HeroSectionProps) => {
@@ -90,9 +90,10 @@ const HeroSection = ({ onSectionChange }: HeroSectionProps) => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      onSectionChange('discovery');
+      onSectionChange('discovery', searchQuery);  // pass query
     }
   };
+
 
   return (
     <section
@@ -174,7 +175,6 @@ const HeroSection = ({ onSectionChange }: HeroSectionProps) => {
                 key={suggestion}
                 onClick={() => {
                   setSearchQuery(suggestion);
-                  onSectionChange('discovery');
                 }}
                 className="btn-glass text-sm hover:neon-border-primary"
               >

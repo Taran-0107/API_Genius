@@ -9,6 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { gsap } from 'gsap';
+import { apiFetch } from '@/helpers/helper';
+import { useAuth } from '@/AuthContext'; // Import the custom hook
 
 interface SignupFormData {
   name: string;
@@ -21,6 +23,7 @@ interface SignupFormData {
 const Signup = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<SignupFormData>();
   const password = watch('password');
+  const { login } = useAuth(); // ✅ call useAuth() here, at top level
 
   useEffect(() => {
     // GSAP entrance animations
@@ -31,9 +34,25 @@ const Signup = () => {
       .to('.signup-card', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4');
   }, []);
 
-  const onSubmit = (data: SignupFormData) => {
+  const onSubmit = async (data: SignupFormData) => {
     console.log('Signup attempt:', data);
-    // Handle signup logic here
+    try {
+      const response = await apiFetch('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ username: data.name,email: data.email, password: data.password }),
+      });
+
+      console.log('signup successful:', response);
+
+      const { access_token, user } = response;
+      const token=access_token;
+      console.log('Token:', token);
+      login(token, user); // ✅ safe to use here
+
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (

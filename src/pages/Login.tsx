@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { gsap } from 'gsap';
+import { apiFetch } from '@/helpers/helper';
+import { useAuth } from '@/AuthContext'; // Import the custom hook
 
 interface LoginFormData {
   email: string;
@@ -16,19 +18,27 @@ interface LoginFormData {
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+  const { login } = useAuth();  // ✅ call useAuth() here, at top level
 
-  useEffect(() => {
-    // GSAP entrance animations
-    gsap.set(['.login-card', '.login-bg'], { opacity: 0, y: 30 });
-    
-    const tl = gsap.timeline();
-    tl.to('.login-bg', { opacity: 1, duration: 0.8, ease: 'power2.out' })
-      .to('.login-card', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4');
-  }, []);
-
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     console.log('Login attempt:', data);
-    // Handle login logic here
+    try {
+      const response = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ username: data.email, password: data.password }),
+      });
+
+      console.log('Login successful:', response);
+
+      const { access_token, user } = response;
+      const token=access_token;
+      console.log('Token:', token);
+      login(token, user); // ✅ safe to use here
+
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (
