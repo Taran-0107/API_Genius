@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLocation } from "react-router-dom";
-import {apiFetch} from '@/helpers/helper'; // Adjust the import path as necessary
+import {apiFetch} from '@/helpers/Helper'; // Adjust the import path as necessary
 import { 
   MagnifyingGlass, 
   Star, 
@@ -103,6 +103,8 @@ const APIDiscoverySection = ({ onSectionChange, onSelectionChange,initialDiscove
     setPage(1);
   };
 
+  const [discoverymode, setDiscoveryMode] = useState(initialDiscover || false);
+
   // set query from props on mount
   useEffect(() => {
     if (initialQuery) {
@@ -112,13 +114,15 @@ const APIDiscoverySection = ({ onSectionChange, onSelectionChange,initialDiscove
 
   // once query is set, if initialDiscover is true, run discover
   useEffect(() => {
-    if (initialDiscover && searchQuery) {
+    if (discoverymode && searchQuery) {
       fetchApis(true, true);
+
+      setDiscoveryMode(false); // Reset discovery mode after fetching
     }
-  }, [initialDiscover, searchQuery, fetchApis]);
+  }, [fetchApis, discoverymode, searchQuery]);
 
   useEffect(() => {
-    if (!initialDiscover) {
+    if (!discoverymode) {
       fetchApis(false);
     }
   }, [fetchApis,initialDiscover]);

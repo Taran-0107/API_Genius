@@ -10,7 +10,7 @@ import {
   Tag,
   Calendar
 } from 'phosphor-react';
-import { apiFetch, apiFetchWithAuth } from '@/helpers/helper';
+import { apiFetch, apiFetchWithAuth } from '@/helpers/Helper';
 
 gsap.registerPlugin(ScrollTrigger);
 

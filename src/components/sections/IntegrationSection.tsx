@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {apiFetch,apiFetchWithAuth} from '@/helpers/helper'; // Adjust the import path as necessary
+import {apiFetch,apiFetchWithAuth} from '@/helpers/Helper'; // Adjust the import path as necessary
 import { 
   Code, 
   Copy, 
