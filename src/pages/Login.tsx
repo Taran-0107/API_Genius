@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { gsap } from 'gsap';
-import { apiFetch } from '@/helpers/helper';
+import { apiFetch } from '@/helpers/Helper';
 import { useAuth } from '@/AuthContext'; // Import the custom hook
 
 interface LoginFormData {

@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { gsap } from 'gsap';
-import { apiFetch } from '@/helpers/helper';
+import { apiFetch } from '@/helpers/Helper';
 import { useAuth } from '@/AuthContext'; // Import the custom hook
 
 interface SignupFormData {
