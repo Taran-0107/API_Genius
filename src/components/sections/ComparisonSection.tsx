@@ -62,7 +62,7 @@ interface ComparisonResult {
 const ComparisonSection = () => {
   const { isLoggedIn, user } = useAuth();
   const [viewMode, setViewMode] = useState<'input' | 'results'>('input');
-  const [comparisonMode, setComparisonMode] = useState<'basic' | 'advanced'>('basic');
+  const [comparisonMode, setComparisonMode] = useState<'basic' | 'advanced'>('advanced');
   const sectionRef = useRef<HTMLDivElement>(null);
   const chartsRef = useRef<HTMLDivElement>(null);
 
@@ -278,33 +278,7 @@ const ComparisonSection = () => {
         {viewMode === 'input' ? (
           /* Input Section */
           <div className="space-y-8">
-            {/* Comparison Mode Toggle */}
-            <div className="flex justify-center mb-8">
-              <div className="glass p-1 rounded-xl">
-                <button
-                  onClick={() => setComparisonMode('basic')}
-                  className={`px-6 py-3 rounded-xl transition-all flex items-center space-x-2 ${
-                    comparisonMode === 'basic'
-                      ? 'bg-gradient-primary text-primary-foreground glow-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Sparkle size={18} />
-                  <span>Quick Compare</span>
-                </button>
-                <button
-                  onClick={() => setComparisonMode('advanced')}
-                  className={`px-6 py-3 rounded-xl transition-all flex items-center space-x-2 ${
-                    comparisonMode === 'advanced'
-                      ? 'bg-gradient-primary text-primary-foreground glow-primary'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Gear size={18} />
-                  <span>Advanced Compare</span>
-                </button>
-              </div>
-            </div>
+
 
             {comparisonMode === 'basic' ? (
               /* Basic Comparison */
@@ -635,9 +609,8 @@ const ComparisonSection = () => {
                               {comparisonResult.apis.map((api, index) => {
                                 const value = api[metric.key as keyof Api] as number;
                                 const displayValue = metric.key === 'rating_count' 
-                                  ? (value || 0).toString()
-                                  : (value || 0).toFixed(1);
-                                
+                                  ? String(value ?? 0)
+                                  : Number(value ?? 0).toFixed(1);                                
                                 return (
                                   <div key={api.id}>
                                     <div className="flex items-center justify-between mb-2">
@@ -699,25 +672,25 @@ const ComparisonSection = () => {
                               {api.avg_ease_of_use && (
                                 <div className="flex items-center space-x-1">
                                   <TrendUp size={14} className="text-green-400" />
-                                  <span>Ease: {api.avg_ease_of_use.toFixed(1)}/5</span>
+                                  <span>Ease: {api.avg_ease_of_use != null ? Number(api.avg_ease_of_use).toFixed(1) : 'N/A'}/5</span>
                                 </div>
                               )}
                               {api.avg_docs_quality && (
                                 <div className="flex items-center space-x-1">
                                   <Code size={14} className="text-purple-400" />
-                                  <span>Docs: {api.avg_docs_quality.toFixed(1)}/5</span>
+                                  <span>Docs: {api.avg_docs_quality != null ? Number(api.avg_docs_quality).toFixed(1) : 'N/A'}/5</span>
                                 </div>
                               )}
                               {api.avg_cost_efficiency && (
                                 <div className="flex items-center space-x-1">
                                   <CurrencyDollar size={14} className="text-yellow-400" />
-                                  <span>Cost: {api.avg_cost_efficiency.toFixed(1)}/5</span>
+                                  <span>Cost: {api.avg_cost_efficiency != null ? Number(api.avg_cost_efficiency).toFixed(1) : 'N/A'}/5</span>
                                 </div>
                               )}
                               {api.avg_latency && (
                                 <div className="flex items-center space-x-1">
                                   <Clock size={14} className="text-blue-400" />
-                                  <span>Speed: {api.avg_latency.toFixed(1)}/5</span>
+                                  <span>Latency: {api.avg_latency != null ? Number(api.avg_latency).toFixed(1) : 'N/A'}/5</span>
                                 </div>
                               )}
                             </div>

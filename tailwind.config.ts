@@ -74,6 +74,8 @@ export default {
 				'gradient-glow': 'var(--gradient-glow)',
 				'gradient-glass': 'var(--gradient-glass)',
 				'gradient-radial': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
+				'gradient-secondary': 'var(--gradient-secondary)',
+
 			},
 			boxShadow: {
 				'glow-primary': 'var(--glow-primary)',

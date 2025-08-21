@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       '/api': {
         // THIS IS THE BACKEND ADDRESS
-        target: 'http://localhost:5000', 
+        target: 'http://localhost:5001', 
         changeOrigin: true,
       }
     }
